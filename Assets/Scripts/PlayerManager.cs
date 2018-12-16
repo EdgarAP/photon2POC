@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Photon.Pun;
 using Photon.Pun.Demo.PunBasics;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 {
@@ -18,6 +19,10 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
     [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
     public static GameObject LocalPlayerInstance;
+
+    [Tooltip("The Player's UI Gameobject Prefab")]
+    [SerializeField]
+    public GameObject PlayerUIPrefab;
 
     void Awake()
     {
@@ -36,10 +41,24 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             beams.SetActive(false);
         }
+
+        SceneManager.sceneLoaded += (scene, loadingMode) =>
+        {
+            this.CalledOnLevelWasLoaded(scene.buildIndex);
+        };
     }
 
     void Start()
     {
+        if (PlayerUIPrefab)
+        {
+            InstantiateUIGameObject();
+        }
+        else
+        {
+            Debug.LogWarning("<Color=Red><a>Missing</a></Color> PlayerUiPrefab reference on player Prefab.", this);
+        }
+
         CameraWork _cameraWork = this.gameObject.GetComponent<CameraWork>();
         if (_cameraWork != null)
         {
@@ -118,6 +137,16 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         Health -= 0.1f * Time.deltaTime;
     }
 
+    void CalledOnLevelWasLoaded(int level)
+    {
+        if (!Physics.Raycast(transform.position, Vector3.down, 5f))
+        {
+            transform.position = new Vector3(0, 5f, 0);
+        }
+
+        InstantiateUIGameObject();
+    }
+
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
@@ -130,5 +159,11 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             this.isFiring = (bool)stream.ReceiveNext();
             this.Health = (float)stream.ReceiveNext();
         }
+    }
+
+    private void InstantiateUIGameObject()
+    {
+        GameObject _UIGO = Instantiate(PlayerUIPrefab);
+        _UIGO.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
     }
 }
