@@ -14,6 +14,7 @@ public class PlayerUI : MonoBehaviour
     [SerializeField]
     private Slider playerHealthSlider;
 
+    [SerializeField]
     private PlayerManager target;
 
     [Tooltip("Pixel offset from the player target")]
@@ -47,6 +48,7 @@ public class PlayerUI : MonoBehaviour
     {
         if (targetTransform != null)
         {
+            Debug.Log(targetTransform);
             targetPosition = targetTransform.position;
             targetPosition.y = characterControllerHeight;
             this.transform.position = Camera.main.WorldToScreenPoint(targetPosition) + screenOffset;
@@ -55,6 +57,7 @@ public class PlayerUI : MonoBehaviour
 
     public void SetTarget(PlayerManager _target)
     {
+        Debug.Log("SetTarget: " + _target.photonView.Owner.NickName);
         if (_target == null)
         {
             Debug.LogError("<Color=Red><a>Missing</a></Color> PlayerManager target for PlayerUI.SetTarget");
@@ -63,6 +66,7 @@ public class PlayerUI : MonoBehaviour
 
         // Cache references for efficiency
         target = _target;
+        targetTransform = target.GetComponent<Transform>();        
 
         if (playerNameText != null)
         {

@@ -16,3 +16,6 @@
 [1209/174851.449:ERROR:file_io_win.cc(179)] CreateFile C:\Users\Edgar\AppData\Local\Google\Chrome\User Data\Crashpad\settings.dat: Acceso denegado. (0x5)
 [1209/174851.456:ERROR:registration_protocol_win.cc(84)] TransactNamedPipe: Ha terminado la canalización. (0x6D)
 [1209/174851.457:ERROR:file_io_win.cc(179)] CreateFile C:\Users\Edgar\AppData\Local\Google\Chrome\User Data\Crashpad\settings.dat: Acceso denegado. (0x5)
+[1217/192438.898:ERROR:file_io_win.cc(179)] CreateFile C:\Users\Edgar\AppData\Local\Google\Chrome\User Data\Crashpad\settings.dat: Acceso denegado. (0x5)
+[1217/192438.934:ERROR:registration_protocol_win.cc(84)] TransactNamedPipe: Ha terminado la canalización. (0x6D)
+[1217/192438.935:ERROR:file_io_win.cc(179)] CreateFile C:\Users\Edgar\AppData\Local\Google\Chrome\User Data\Crashpad\settings.dat: Acceso denegado. (0x5)

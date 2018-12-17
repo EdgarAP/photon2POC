@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Photon.Pun;
 using Photon.Pun.Demo.PunBasics;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 {
@@ -28,7 +27,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (photonView.IsMine)
         {
-            PlayerManager.LocalPlayerInstance = this.gameObject;
+            LocalPlayerInstance = gameObject;
         }
 
         DontDestroyOnLoad(this.gameObject);
@@ -41,16 +40,11 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             beams.SetActive(false);
         }
-
-        SceneManager.sceneLoaded += (scene, loadingMode) =>
-        {
-            this.CalledOnLevelWasLoaded(scene.buildIndex);
-        };
     }
 
     void Start()
     {
-        if (PlayerUIPrefab)
+        if (PlayerUIPrefab != null)
         {
             InstantiateUIGameObject();
         }
@@ -71,6 +65,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             Debug.LogError("<Color=Red><a>Missing</a></Color> CameraWork Component on playerPrefab.", this);
         }
+
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     void Update()
@@ -89,6 +85,13 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             beams.SetActive(isFiring);
         }
+    }
+
+    public override void OnDisable()
+    {
+        base.OnDisable();
+
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     void ProcessInputs()
@@ -137,9 +140,9 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         Health -= 0.1f * Time.deltaTime;
     }
 
-    void CalledOnLevelWasLoaded(int level)
+    void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode loadingMode)
     {
-        if (!Physics.Raycast(transform.position, Vector3.down, 5f))
+        if (!Physics.Raycast(transform.position, -Vector3.up, 5f))
         {
             transform.position = new Vector3(0, 5f, 0);
         }
@@ -163,7 +166,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private void InstantiateUIGameObject()
     {
-        GameObject _UIGO = Instantiate(PlayerUIPrefab);
+        GameObject _UIGO = Instantiate(this.PlayerUIPrefab);
         _UIGO.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
     }
 }
